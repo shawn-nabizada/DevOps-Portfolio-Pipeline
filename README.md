@@ -8,40 +8,17 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-<!--
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![project_license][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
--->
 
 
 
 <!-- PROJECT LOGO -->
 <div align="center">
-  <!--
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-  -->
 
 <h3 align="center">DevOps Portfolio Pipeline</h3>
 
   <p align="center">
-    A production-style CI/CD pipeline project designed to automate builds, deployments, and observability for a Go + React portfolio app.
+    A planned modular-monolith portfolio app that will combine a Next.js frontend and Go backend, containerized and deployed to AWS EKS through a CI/CD pipeline.
     <br />
-    <a href="https://github.com/shawn-nabizada/devops-portfolio-pipeline"><strong>Explore the docs »</strong></a>
-    <br />
-    <!--
-    <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
-    &middot;
-    <a href="https://github.com/github_username/repo_name/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    &middot;
-    <a href="https://github.com/github_username/repo_name/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
-    -->
   </p>
 </div>
 
@@ -54,15 +31,15 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
-        <li><a href="#key-features">Key Features</a></li>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#key-features">Planned Features</a></li>
+        <li><a href="#built-with">Tech Stack</a></li>
       </ul>
     </li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#getting-started">Project Plan</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#prerequisites">Prerequisites (Planned)</a></li>
+        <li><a href="#installation">Setup & Installation (Draft)</a></li>
       </ul>
     </li>
     <li><a href="#purpose">Purpose</a></li>
@@ -77,52 +54,102 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-**DevOps Portfolio Pipeline** is a personal DevOps project that demonstrates the full lifecycle of application delivery — from source code to deployment, monitoring, and security.  
-It features a microservices-inspired setup with **Golang (API)** and **React (frontend)**, fully containerized and deployed to **AWS EKS** using automated pipelines and Infrastructure as Code.
+**DevOps Portfolio Pipeline** will be a full-stack personal portfolio system implemented as a **modular monolith**, featuring a **Next.js frontend** and **Golang backend** running as two containers inside a single Kubernetes Pod. The project will initially be tested using **k3s**, a lightweight Kubernetes distribution, before transitioning to **AWS EKS** for production deployment.
+It will use **AWS RDS PostgreSQL** for data persistence, with CI/CD automation handled by **GitHub Actions** and **ArgoCD** for deployment to **AWS EKS**.  
+Observability will be achieved with **Prometheus** and **Grafana**, and authentication will be managed through **NextAuth**.
 
-This project simulates a real-world CI/CD environment for continuous learning and demonstration purposes.
+This project is being developed as a hands-on demonstration of modern DevOps workflows and cloud-native software design.
 
-### Key Features
-- Automated build, test, and deploy pipelines with **Jenkins** and **GitHub Actions**
-- Containerized **Golang API** and **React frontend** with **Docker**
-- Infrastructure provisioning via **Terraform**
-- Configuration management and deployment via **Ansible**
-- Blue/Green deployments using **Helm**
-- Integrated observability with **Prometheus** and **Grafana**
-- Image scanning and security enforcement with **Trivy**
+### Planned Features
+- **Architecture:** Modular monolith with **Next.js (frontend)** and **Go API (backend)** in one Pod
+- **Networking:** Internal-only API (`127.0.0.1:<api-port>`) for secure in-Pod communication
+- **Database:** **AWS RDS PostgreSQL**
+- **Authentication:** **NextAuth** with two user roles  
+  - **Guest:** Public access to view portfolio content  
+  - **Admin:** Authenticated access to create, update, or delete projects
+- **CI/CD Pipeline:**  
+  - **GitHub Actions** for build and push to ECR  
+  - **ArgoCD** for automated deployment to EKS
+- **Monitoring:** **Prometheus** metrics endpoint on Go backend and **Grafana** dashboards
+- **Secrets & Config:** Stored securely in Kubernetes or AWS Secrets Manager
+- **Infrastructure as Code:** Single Helm chart deployment for repeatability
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
-### Built With
+### Tech Stack
 
 [![Go][Go-badge]][Go-url]  
-[![React][React-badge]][React-url]  
+[![Next.js][React-badge]][React-url]  
 [![Docker][Docker-badge]][Docker-url]  
 [![Kubernetes][Kubernetes-badge]][Kubernetes-url]  
-[![Terraform][Terraform-badge]][Terraform-url]  
-[![Ansible][Ansible-badge]][Ansible-url]  
 [![AWS][AWS-badge]][AWS-url]  
+[![Postgres][Postgres-badge]][Postgres-url]  
+[![GitHub Actions][Actions-badge]][Actions-url]  
+[![ArgoCD][ArgoCD-badge]][ArgoCD-url]  
 [![Prometheus][Prometheus-badge]][Prometheus-url]  
-[![Grafana][Grafana-badge]][Grafana-url]  
-[![Jenkins][Jenkins-badge]][Jenkins-url]  
-[![Trivy][Trivy-badge]][Trivy-url]
+[![Grafana][Grafana-badge]][Grafana-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
 <!-- GETTING STARTED -->
-## Getting Started
+## Project Plan
 
-Work in progress.
+This section outlines how the project will eventually be structured and deployed.  
+The commands and setup below are **draft steps** — implementation will happen in future milestones.
 
-### Prerequisites
+> **Intended repo structure**
+```
+/frontend        # Next.js (Node 20+) with NextAuth
+/backend         # Go API (net/http or Gin), /healthz and /metrics
+/deploy/helm     # Helm chart: one Deployment, two containers, one Service (frontend)
+```
 
+### Prerequisites (Planned)
+- AWS Account with EKS, ECR, RDS, ACM, and IAM permissions  
+- Tools to be used: `kubectl`, `helm`, `k3s`, `awscli`, and `argocd` 
+- ALB Ingress Controller and ArgoCD will be installed on EKS  
+- PostgreSQL database (AWS RDS) for persistent data storage
 
-### Installation
+**Expected Configuration**
+| Item | Default | Notes |
+|------|----------|-------|
+| Region | `ca-central-1` | Planned AWS region |
+| Ports | Backend `8080`, Frontend `3000` | |
+| DB Name | `portfolio_db` | Will be created on RDS |
+| Roles | Guest (view), Admin (CRUD) | |
+| API Access | Private (in-Pod only) | Frontend communicates internally |
 
+---
+
+### Setup & Installation (Draft)
+
+This section will eventually include detailed setup commands for deploying the application.  
+For now, it serves as a **blueprint** for future automation.
+
+1. **Create ECR Repositories (Planned)**  
+   The app will use two ECR repos: `frontend` and `backend`.
+
+2. **Configure GitHub OIDC Role (Planned)**  
+   GitHub Actions will assume an AWS IAM role for ECR access.
+
+3. **Provision AWS RDS Postgres (Planned)**  
+   The RDS instance will store portfolio and user data.
+
+4. **Define Secrets (Future)**  
+   Application secrets will be managed via Kubernetes or AWS Secrets Manager.
+
+5. **Set Up CI/CD (Future)**  
+   GitHub Actions → ECR → ArgoCD → EKS workflow will be automated through YAML pipelines.
+
+6. **Observability Stack (Planned)**  
+   Prometheus and Grafana will be installed for monitoring and alerting.
+
+7. **Testing & Verification (Future)**  
+   Health checks and readiness probes will ensure a stable deployment before production rollout.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -130,23 +157,21 @@ Work in progress.
 
 ## Purpose
 
-This project was created as a personal learning initiative to **understand and apply the fundamentals of DevOps engineering** in a practical, end-to-end environment.  
-The goal is to simulate the real-world workflow of a modern DevOps pipeline — from development and automation to deployment and monitoring.
+This project is being developed as a **DevOps learning initiative** to explore the full lifecycle of cloud-native application delivery.  
+The intent is to gain hands-on experience with CI/CD automation, infrastructure orchestration, and modern software deployment workflows.
 
-### Learning Objectives
-- **Understand CI/CD principles:** Build a continuous integration and delivery pipeline with Jenkins to automate code testing, building, and deployment.
-- **Containerization & orchestration:** Learn how to package applications using Docker and deploy them on Kubernetes (EKS).
-- **Infrastructure as Code (IaC):** Use Terraform to provision AWS resources and Ansible to automate environment configuration.
-- **Observability:** Gain experience setting up Prometheus and Grafana for metrics, alerts, and dashboards.
-- **Security in pipelines:** Integrate image scanning with Trivy to identify vulnerabilities early in the CI/CD process.
-- **Deployment strategies:** Explore blue/green deployments and safe rollout techniques using Helm and Ansible.
-- **Collaboration & documentation:** Practice Git branching, pull requests, and structured documentation to maintain production-quality standards.
+### Learning Goals
+- Understand how to automate build, test, and deployment pipelines  
+- Practice containerization and orchestration using Docker and Kubernetes  
+- Learn Infrastructure-as-Code principles using Helm and declarative YAML manifests  
+- Integrate monitoring and observability with Prometheus and Grafana  
+- Implement secure authentication flows with NextAuth  
+- Strengthen AWS DevOps fundamentals with EKS, RDS, ECR, and IAM
 
-### Outcome
-By the end of this project, I aim to:
-- Strengthen my understanding of DevOps pipelines and cloud-native architecture.
-- Build a reusable reference for future automation projects.
-- Develop the skills required to deploy reliable, secure, and observable applications at scale.
+### Expected Outcomes
+- A fully functional cloud-deployed portfolio application  
+- A reusable template for future DevOps projects  
+- A documented, production-like reference for end-to-end delivery
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -154,48 +179,56 @@ By the end of this project, I aim to:
 
 <!-- ROADMAP -->
 ## Roadmap
-Work in progress.
 
-### Phase 1 — Core CI/CD Pipeline (MVP)
-- [ ] Containerize the Golang API and React frontend using Docker
-- [ ] Build a Jenkins pipeline to automate build, test, scan (Trivy), and deploy stages
-- [ ] Push Docker images to AWS ECR
-- [ ] Provision AWS EKS cluster using Terraform
-- [ ] Deploy workloads with Helm and verify environment stability
+### Phase 1 — Frontend Development
+- [ ] Initialize the Next.js project structure  
+- [ ] Design core pages (Home, Projects, Contact)  
+- [ ] Implement responsive layout and reusable UI components  
+- [ ] Set up client-side routing and data fetching structure  
+- [ ] Integrate **NextAuth** for authentication (guest/admin roles)  
+- [ ] Build admin-only CRUD interface for managing projects  
 
-### Phase 2 — Infrastructure & Configuration Automation
-- [ ] Automate configuration management and deployments using Ansible
-- [ ] Introduce environment separation (dev, staging, prod) via Helm values
-- [ ] Implement Blue/Green and Rolling Deployments for safe updates
-- [ ] Define IaC best practices: remote Terraform state, variable modules, and workspaces
+### Phase 2 — Backend Development
+- [ ] Initialize Go API with basic routing (Gin or net/http)  
+- [ ] Implement `/healthz` and `/metrics` endpoints  
+- [ ] Connect backend to **PostgreSQL** (local instance or RDS later)  
+- [ ] Define and apply schema migrations (projects table)  
+- [ ] Expose REST endpoints for CRUD operations on projects  
+- [ ] Add authentication middleware to protect admin routes  
+- [ ] Test local end-to-end flow (frontend ↔ backend ↔ database)  
 
-### Phase 3 — Observability & Security
-- [ ] Integrate Prometheus and Grafana for monitoring cluster, pods, and app metrics
-- [ ] Add alerting and health dashboards for uptime tracking
-- [ ] Automate image scanning with Trivy and integrate reports into Jenkins
-- [ ] Introduce log aggregation (ELK or Loki) for centralized observability
-- [ ] Enforce least-privilege IAM roles and secrets management via AWS Secrets Manager
+### Phase 3 — Integration & Testing
+- [ ] Integrate frontend with backend API (private internal calls)  
+- [ ] Validate full CRUD functionality from the admin UI  
+- [ ] Add form validation, error handling, and loading states  
+- [ ] Conduct local testing using **k3s** (lightweight Kubernetes distribution)  
+- [ ] Finalize environment variable configuration and secrets layout  
 
-### Phase 4 — Microservices & Scalability
-- [ ] Split the monolithic app into multiple microservices (profile-svc, projects-svc, metrics-svc)
-- [ ] Implement service discovery and API versioning
-- [ ] Use NGINX Ingress for unified routing and TLS termination
-- [ ] Add message-based communication with AWS SQS or NATS
+### Phase 4 — DevOps Setup
+- [ ] Containerize both applications with Docker  
+- [ ] Create a single Helm chart for the modular monolith (frontend + backend Pod)  
+- [ ] Configure environment variables and secrets through Helm values  
+- [ ] Prepare GitHub Actions workflows for build and push to ECR  
+- [ ] Deploy to **k3s** for initial CI/CD pipeline validation  
 
-### Phase 5 — GitOps & Continuous Improvement
-- [ ] Migrate CI/CD to a GitOps model using ArgoCD
-- [ ] Introduce automated testing pipelines (unit + integration)
-- [ ] Add cost monitoring and autoscaling policies
-- [ ] Document best practices and publish full pipeline guide
+### Phase 5 — CI/CD & Observability Rollout
+- [ ] Transition deployment from k3s to **AWS EKS**  
+- [ ] Automate CI/CD pipeline with **GitHub Actions → ECR → ArgoCD → EKS**  
+- [ ] Configure **ArgoCD** for automated deployments  
+- [ ] Add liveness and readiness probes to both containers  
+- [ ] Install **Prometheus** and **Grafana** for monitoring  
+- [ ] Integrate metrics dashboards and confirm `/metrics` scraping  
+- [ ] Document final deployment and operational procedures  
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+
+
 <!-- CONTACT -->
 ## Contact
-**Shawn Nabizada**
-<br />
-[![LinkedIn][linkedin-shield]][linkedin-url]
+**Shawn Nabizada**  
+[![LinkedIn][linkedin-shield]][linkedin-url]  
 [![Gmail][gmail-shield]][gmail-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -204,42 +237,27 @@ Work in progress.
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/shawn-nabizada/
 [gmail-shield]: https://img.shields.io/badge/-Gmail-red?logo=gmail&logoColor=white&style=for-the-badge  
 [gmail-url]: mailto:shawn.nabizada@gmail.com
-[product-screenshot]: images/screenshot.png
-<!-- Shields.io badges. You can a comprehensive list with many more badges at: https://github.com/inttter/md-badges -->
 [Go-badge]: https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white&style=for-the-badge  
 [Go-url]: https://golang.org/  
-[React-badge]: https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB&style=for-the-badge  
-[React-url]: https://reactjs.org/  
+[React-badge]: https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white&style=for-the-badge  
+[React-url]: https://nextjs.org/  
 [Docker-badge]: https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white&style=for-the-badge  
 [Docker-url]: https://www.docker.com/  
 [Kubernetes-badge]: https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white&style=for-the-badge  
 [Kubernetes-url]: https://kubernetes.io/  
-[Terraform-badge]: https://img.shields.io/badge/Terraform-623CE4?logo=terraform&logoColor=white&style=for-the-badge  
-[Terraform-url]: https://www.terraform.io/  
-[Ansible-badge]: https://img.shields.io/badge/Ansible-EE0000?logo=ansible&logoColor=white&style=for-the-badge  
-[Ansible-url]: https://www.ansible.com/  
 [AWS-badge]: https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white&style=for-the-badge  
 [AWS-url]: https://aws.amazon.com/  
+[Postgres-badge]: https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
+[Postgres-url]: https://www.postgresql.org/
+[Actions-badge]: https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white&style=for-the-badge
+[Actions-url]: https://docs.github.com/actions
+[ArgoCD-badge]: https://img.shields.io/badge/ArgoCD-FE6D00?logo=argo&logoColor=white&style=for-the-badge
+[ArgoCD-url]: https://argo-cd.readthedocs.io/
 [Prometheus-badge]: https://img.shields.io/badge/Prometheus-E6522C?logo=prometheus&logoColor=white&style=for-the-badge  
 [Prometheus-url]: https://prometheus.io/  
 [Grafana-badge]: https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white&style=for-the-badge  
 [Grafana-url]: https://grafana.com/  
-[Jenkins-badge]: https://img.shields.io/badge/Jenkins-D24939?logo=jenkins&logoColor=white&style=for-the-badge  
-[Jenkins-url]: https://www.jenkins.io/  
-[Trivy-badge]: https://img.shields.io/badge/Trivy-1903FC?logo=aqua&logoColor=white&style=for-the-badge  
-[Trivy-url]: https://aquasecurity.github.io/trivy/  
