@@ -2,262 +2,115 @@
 
 <!-- PROJECT SHIELDS -->
 <!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+*** Reference-style links for badges.
+*** Adjust at bottom of file if URLs change.
 -->
-
-
 
 <!-- PROJECT LOGO -->
 <div align="center">
 
-<h3 align="center">DevOps Portfolio Pipeline</h3>
+<h3 align="center">DevOps Portfolio Pipeline — Local k3s Deployment</h3>
 
   <p align="center">
-    A planned modular-monolith portfolio app that will combine a Next.js frontend and Go backend, containerized and deployed to AWS EKS through a CI/CD pipeline.
-    <br />
+    A modular monolith portfolio project designed to run locally on Ubuntu using k3s, Ansible provisioning, and a GitHub Actions → ArgoCD CI/CD workflow.
   </p>
 </div>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#key-features">Planned Features</a></li>
-        <li><a href="#built-with">Tech Stack</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Project Plan</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites (Planned)</a></li>
-        <li><a href="#installation">Setup & Installation (Draft)</a></li>
-      </ul>
-    </li>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#getting-started">Project Plan</a></li>
     <li><a href="#purpose">Purpose</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
 
-
-
-
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
-**DevOps Portfolio Pipeline** will be a full-stack personal portfolio system implemented as a **modular monolith**, featuring a **Next.js frontend** and **Golang backend** running as two containers inside a single Kubernetes Pod. The project will initially be tested using **k3s**, a lightweight Kubernetes distribution, before transitioning to **AWS EKS** for production deployment.
-It will use **AWS RDS PostgreSQL** for data persistence, with CI/CD automation handled by **GitHub Actions** and **ArgoCD** for deployment to **AWS EKS**.  
-Observability will be achieved with **Prometheus** and **Grafana**, and authentication will be managed through **NextAuth**.
+**DevOps Portfolio Pipeline** will be a full-stack personal portfolio project implemented as a **modular monolith**, composed of a **Next.js frontend** and **Golang backend**, each deployed in their own Pod on a **k3s cluster running locally on Ubuntu (bare metal)**.
 
-This project is being developed as a hands-on demonstration of modern DevOps workflows and cloud-native software design.
+The cluster will be provisioned automatically using the official [**k3s-ansible**](https://github.com/k3s-io/k3s-ansible) playbook, with **GitHub Actions** building and pushing container images to **GitHub Container Registry (GHCR)**.  
+**ArgoCD**, running inside k3s, will continuously sync new images from GHCR to the cluster using Helm charts.
 
 ### Planned Features
-- **Architecture:** Modular monolith with **Next.js (frontend)** and **Go API (backend)** in one Pod
-- **Networking:** Internal-only API (`127.0.0.1:<api-port>`) for secure in-Pod communication
-- **Database:** **AWS RDS PostgreSQL**
+- **Architecture:** Modular monolith with separate Deployments for Next.js, Go API, and Postgres  
+- **Networking:** Service-to-Service communication inside cluster; Traefik handles Ingress with custom hostname (e.g., `https://portfolio.local`)  
+- **Database:** Postgres running as a StatefulSet with persistent local storage  
 - **Authentication:** **NextAuth** with two user roles  
-  - **Guest:** Public access to view portfolio content  
-  - **Admin:** Authenticated access to create, update, or delete projects
-- **CI/CD Pipeline:**  
-  - **GitHub Actions** for build and push to ECR  
-  - **ArgoCD** for automated deployment to EKS
-- **Monitoring:** **Prometheus** metrics endpoint on Go backend and **Grafana** dashboards
-- **Secrets & Config:** Stored securely in Kubernetes or AWS Secrets Manager
-- **Infrastructure as Code:** Single Helm chart deployment for repeatability
+  - **Guest:** Public view of projects  
+  - **Admin:** Authenticated CRUD access for project management  
+- **CI/CD:**  
+  - **GitHub Actions** → build + push images to GHCR  
+  - **ArgoCD** → automatically sync Helm releases into k3s  
+- **Provisioning:** Ansible playbook from [k3s-ansible](https://github.com/k3s-io/k3s-ansible) for bootstrapping the local cluster  
+- **Monitoring:** Prometheus + Grafana stack for observability  
+- **Security & Secrets:** Kubernetes Secrets for MVP; future integration with SOPS  
+- **Deployment Strategy:** One Pod per container, single-node setup for local development
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-### Tech Stack
-
-[![Go][Go-badge]][Go-url]  
-[![Next.js][React-badge]][React-url]  
-[![Docker][Docker-badge]][Docker-url]  
-[![Kubernetes][Kubernetes-badge]][Kubernetes-url]  
-[![AWS][AWS-badge]][AWS-url]  
-[![Postgres][Postgres-badge]][Postgres-url]  
-[![GitHub Actions][Actions-badge]][Actions-url]  
-[![ArgoCD][ArgoCD-badge]][ArgoCD-url]  
-[![Prometheus][Prometheus-badge]][Prometheus-url]  
-[![Grafana][Grafana-badge]][Grafana-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- GETTING STARTED -->
 ## Project Plan
 
-This section outlines how the project will eventually be structured and deployed.  
-The commands and setup below are **draft steps** — implementation will happen in future milestones.
+This project will be built and deployed locally, using k3s as a lightweight Kubernetes distribution.  
+All provisioning, configuration, and CI/CD automation will be gradually implemented as the app matures.
 
-> **Intended repo structure**
+> **Planned structure**
 ```
-/frontend        # Next.js (Node 20+) with NextAuth
-/backend         # Go API (net/http or Gin), /healthz and /metrics
-/deploy/helm     # Helm chart: one Deployment, two containers, one Service (frontend)
+/frontend        # Next.js (Node 20+) + NextAuth
+/backend         # Go API (Gin or net/http) with REST endpoints
+/deploy/helm     # Helm chart for all services (frontend, backend, postgres)
+/infra/ansible   # Inventory and vars for k3s-ansible provisioning
 ```
 
 ### Prerequisites (Planned)
-- AWS Account with EKS, ECR, RDS, ACM, and IAM permissions  
-- Tools to be used: `kubectl`, `helm`, `k3s`, `awscli`, and `argocd` 
-- ALB Ingress Controller and ArgoCD will be installed on EKS  
-- PostgreSQL database (AWS RDS) for persistent data storage
-
-**Expected Configuration**
-| Item | Default | Notes |
-|------|----------|-------|
-| Region | `ca-central-1` | Planned AWS region |
-| Ports | Backend `8080`, Frontend `3000` | |
-| DB Name | `portfolio_db` | Will be created on RDS |
-| Roles | Guest (view), Admin (CRUD) | |
-| API Access | Private (in-Pod only) | Frontend communicates internally |
-
----
-
-### Setup & Installation (Draft)
-
-This section will eventually include detailed setup commands for deploying the application.  
-For now, it serves as a **blueprint** for future automation.
-
-1. **Create ECR Repositories (Planned)**  
-   The app will use two ECR repos: `frontend` and `backend`.
-
-2. **Configure GitHub OIDC Role (Planned)**  
-   GitHub Actions will assume an AWS IAM role for ECR access.
-
-3. **Provision AWS RDS Postgres (Planned)**  
-   The RDS instance will store portfolio and user data.
-
-4. **Define Secrets (Future)**  
-   Application secrets will be managed via Kubernetes or AWS Secrets Manager.
-
-5. **Set Up CI/CD (Future)**  
-   GitHub Actions → ECR → ArgoCD → EKS workflow will be automated through YAML pipelines.
-
-6. **Observability Stack (Planned)**  
-   Prometheus and Grafana will be installed for monitoring and alerting.
-
-7. **Testing & Verification (Future)**  
-   Health checks and readiness probes will ensure a stable deployment before production rollout.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
+| Requirement | Description |
+|--------------|-------------|
+| OS | Ubuntu 22.04 LTS (bare metal) |
+| Cluster | k3s provisioned via [k3s-ansible](https://github.com/k3s-io/k3s-ansible) |
+| Registry | GitHub Container Registry (GHCR) |
+| CI/CD Tools | GitHub Actions + ArgoCD |
+| Utilities | `ansible`, `docker`, `helm`, `kubectl`, `argocd`, `git`, `python3` |
+| Hostname | Custom domain (e.g., `portfolio.local`) served by Traefik |
+| Database | PostgreSQL (StatefulSet, local PVC) |
 
 ## Purpose
 
-This project is being developed as a **DevOps learning initiative** to explore the full lifecycle of cloud-native application delivery.  
-The intent is to gain hands-on experience with CI/CD automation, infrastructure orchestration, and modern software deployment workflows.
+This project will serve as a **personal DevOps learning environment** and **showcase portfolio**, simulating a production-style setup entirely on a local machine.  
+The focus is to gain hands-on experience building, containerizing, and automating full-stack applications in a reproducible, infrastructure-as-code approach.
 
-### Learning Goals
-- Understand how to automate build, test, and deployment pipelines  
-- Practice containerization and orchestration using Docker and Kubernetes  
-- Learn Infrastructure-as-Code principles using Helm and declarative YAML manifests  
-- Integrate monitoring and observability with Prometheus and Grafana  
-- Implement secure authentication flows with NextAuth  
-- Strengthen AWS DevOps fundamentals with EKS, RDS, ECR, and IAM
-
-### Expected Outcomes
-- A fully functional cloud-deployed portfolio application  
-- A reusable template for future DevOps projects  
-- A documented, production-like reference for end-to-end delivery
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
 ## Roadmap
 
-### Phase 1 — Frontend Development
-- [ ] Initialize the Next.js project structure  
-- [ ] Design core pages (Home, Projects, Contact)  
-- [ ] Implement responsive layout and reusable UI components  
-- [ ] Set up client-side routing and data fetching structure  
-- [ ] Integrate **NextAuth** for authentication (guest/admin roles)  
-- [ ] Build admin-only CRUD interface for managing projects  
+### Phase 1 — Application Development
+- [ ] Initialize frontend (Next.js) and backend (Go) projects  
+- [ ] Implement REST API endpoints and connect to Postgres  
+- [ ] Add authentication with NextAuth (Guest/Admin roles)  
+- [ ] Test full CRUD functionality locally using Docker Compose  
 
-### Phase 2 — Backend Development
-- [ ] Initialize Go API with basic routing (Gin or net/http)  
-- [ ] Implement `/healthz` and `/metrics` endpoints  
-- [ ] Connect backend to **PostgreSQL** (local instance or RDS later)  
-- [ ] Define and apply schema migrations (projects table)  
-- [ ] Expose REST endpoints for CRUD operations on projects  
-- [ ] Add authentication middleware to protect admin routes  
-- [ ] Test local end-to-end flow (frontend ↔ backend ↔ database)  
+### Phase 2 — Local Cluster Setup
+- [ ] Provision local k3s cluster using **k3s-ansible**  
+- [ ] Deploy PostgreSQL via StatefulSet  
+- [ ] Create Deployments and Services for frontend and backend  
+- [ ] Configure Traefik Ingress for custom hostname  
 
-### Phase 3 — Integration & Testing
-- [ ] Integrate frontend with backend API (private internal calls)  
-- [ ] Validate full CRUD functionality from the admin UI  
-- [ ] Add form validation, error handling, and loading states  
-- [ ] Conduct local testing using **k3s** (lightweight Kubernetes distribution)  
-- [ ] Finalize environment variable configuration and secrets layout  
+### Phase 3 — Helm & Configuration Management
+- [ ] Create unified Helm chart (frontend, backend, database)  
+- [ ] Externalize environment variables and secrets via Helm values  
+- [ ] Test Helm install/upgrade flow on local k3s  
 
-### Phase 4 — DevOps Setup
-- [ ] Containerize both applications with Docker  
-- [ ] Create a single Helm chart for the modular monolith (frontend + backend Pod)  
-- [ ] Configure environment variables and secrets through Helm values  
-- [ ] Prepare GitHub Actions workflows for build and push to ECR  
-- [ ] Deploy to **k3s** for initial CI/CD pipeline validation  
+### Phase 4 — CI/CD Automation
+- [ ] Configure GitHub Actions workflow to build + push to GHCR  
+- [ ] Install ArgoCD in k3s and connect to repository  
+- [ ] Automate ArgoCD syncs for Helm releases  
+- [ ] Verify pipeline: Git push → GHCR update → ArgoCD sync → new deployment  
 
-### Phase 5 — CI/CD & Observability Rollout
-- [ ] Transition deployment from k3s to **AWS EKS**  
-- [ ] Automate CI/CD pipeline with **GitHub Actions → ECR → ArgoCD → EKS**  
-- [ ] Configure **ArgoCD** for automated deployments  
-- [ ] Add liveness and readiness probes to both containers  
-- [ ] Install **Prometheus** and **Grafana** for monitoring  
-- [ ] Integrate metrics dashboards and confirm `/metrics` scraping  
-- [ ] Document final deployment and operational procedures  
+### Phase 5 — Observability & Finalization
+- [ ] Install Prometheus + Grafana stack in k3s  
+- [ ] Expose `/metrics` endpoint on backend  
+- [ ] Create Grafana dashboards for request rate, latency, and errors  
+- [ ] Write project documentation and lessons learned  
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-
-<!-- CONTACT -->
 ## Contact
 **Shawn Nabizada**  
-[![LinkedIn][linkedin-shield]][linkedin-url]  
-[![Gmail][gmail-shield]][gmail-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://www.linkedin.com/in/shawn-nabizada/
-[gmail-shield]: https://img.shields.io/badge/-Gmail-red?logo=gmail&logoColor=white&style=for-the-badge  
-[gmail-url]: mailto:shawn.nabizada@gmail.com
-[Go-badge]: https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white&style=for-the-badge  
-[Go-url]: https://golang.org/  
-[React-badge]: https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white&style=for-the-badge  
-[React-url]: https://nextjs.org/  
-[Docker-badge]: https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white&style=for-the-badge  
-[Docker-url]: https://www.docker.com/  
-[Kubernetes-badge]: https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white&style=for-the-badge  
-[Kubernetes-url]: https://kubernetes.io/  
-[AWS-badge]: https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white&style=for-the-badge  
-[AWS-url]: https://aws.amazon.com/  
-[Postgres-badge]: https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
-[Postgres-url]: https://www.postgresql.org/
-[Actions-badge]: https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white&style=for-the-badge
-[Actions-url]: https://docs.github.com/actions
-[ArgoCD-badge]: https://img.shields.io/badge/ArgoCD-FE6D00?logo=argo&logoColor=white&style=for-the-badge
-[ArgoCD-url]: https://argo-cd.readthedocs.io/
-[Prometheus-badge]: https://img.shields.io/badge/Prometheus-E6522C?logo=prometheus&logoColor=white&style=for-the-badge  
-[Prometheus-url]: https://prometheus.io/  
-[Grafana-badge]: https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white&style=for-the-badge  
-[Grafana-url]: https://grafana.com/  
+[![LinkedIn](https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555)](https://www.linkedin.com/in/shawn-nabizada/)  
+[![Gmail](https://img.shields.io/badge/-Gmail-red?logo=gmail&logoColor=white&style=for-the-badge)](mailto:shawn.nabizada@gmail.com)
